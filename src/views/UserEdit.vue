@@ -9,125 +9,66 @@
               style="width: 600px"
               title=""
               class="img-circle img-thumbnail isTooltip"
-              src="https://bootdey.com/img/Content/avatar/avatar7.png"
+              :src="user.avatar"
               data-original-title="Usuario"
             />
-            <ul title="Ratings" class="list-inline ratings text-center">
-              <li>
-                <a href="#"><span class="glyphicon glyphicon-star"></span></a>
-              </li>
-              <li>
-                <a href="#"><span class="glyphicon glyphicon-star"></span></a>
-              </li>
-              <li>
-                <a href="#"><span class="glyphicon glyphicon-star"></span></a>
-              </li>
-              <li>
-                <a href="#"><span class="glyphicon glyphicon-star"></span></a>
-              </li>
-              <li>
-                <a href="#"><span class="glyphicon glyphicon-star"></span></a>
-              </li>
-            </ul>
           </div>
           <div class="col-md-6">
-            <strong>Information</strong><br />
-            <div class="table-responsive">
-              <table class="table table-user-information">
-                <tbody>
-                  <tr>
-                    <td>
-                      <strong>
-                        <span
-                          class="glyphicon glyphicon-asterisk text-primary"
-                        ></span>
-                        Identificacion
-                      </strong>
-                    </td>
-                    <input>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        <span
-                          class="glyphicon glyphicon-user text-primary"
-                        ></span>
-                        Name
-                      </strong>
-                    </td>
-                    <td class="text-primary">Bootdey</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        <span
-                          class="glyphicon glyphicon-cloud text-primary"
-                        ></span>
-                        Lastname
-                      </strong>
-                    </td>
-                    <td class="text-primary">Bootstrap</td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <strong>
-                        <span
-                          class="glyphicon glyphicon-bookmark text-primary"
-                        ></span>
-                        Username
-                      </strong>
-                    </td>
-                    <td class="text-primary">bootnipets</td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <strong>
-                        <span
-                          class="glyphicon glyphicon-eye-open text-primary"
-                        ></span>
-                        Role
-                      </strong>
-                    </td>
-                    <td class="text-primary">Admin</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        <span
-                          class="glyphicon glyphicon-envelope text-primary"
-                        ></span>
-                        Email
-                      </strong>
-                    </td>
-                    <td class="text-primary">noreply@email.com</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        <span
-                          class="glyphicon glyphicon-calendar text-primary"
-                        ></span>
-                        created
-                      </strong>
-                    </td>
-                    <td class="text-primary">20 jul 20014</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <strong>
-                        <span
-                          class="glyphicon glyphicon-calendar text-primary"
-                        ></span>
-                        Modified
-                      </strong>
-                    </td>
-                    <td class="text-primary">20 jul 20014 20:00:00</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <form>
+              <div class="form-group row">
+                <label for="inputFullName" class="col-sm-2 col-form-label"
+                  >FullName</label
+                >
+                <div class="col-sm-10">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="inputFullName"
+                    placeholder="FullName"
+                    v-model="user.full_name"
+                  />
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputGender" class="col-sm-2 col-form-label"
+                  >Gender</label
+                >
+                <div class="col-sm-10">
+                  <b-form-select v-model="user.gender" class="mb-3">
+                    <template #first>
+                      <b-form-select-option :value="null" disabled
+                        >-- Please select an option --</b-form-select-option
+                      >
+                    </template>
+                    <b-form-select-option value="Male"
+                      >Male</b-form-select-option
+                    >
+                    <b-form-select-option value="Female"
+                      >Female</b-form-select-option
+                    >
+                  </b-form-select>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="inputStatus" class="col-sm-2 col-form-label"
+                  >Status</label
+                >
+                <div class="col-sm-10">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="inputStatus"
+                    placeholder="Status"
+                    v-model="user.status"
+                  />
+                </div>
+              </div>
+              <div>
+                <b-button @click="handleUpdate" block variant="info"
+                  >Update</b-button
+                >
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -136,17 +77,72 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-    name: 'user-edit'
+  name: "user-edit",
+  data() {
+    return {
+      user: { full_name: "", gender: "", status: "" },
+      selected: "",
+    };
+  },
+  created() {
+    axios
+      .get(`http://localhost:3000/api/users/${this.$route.params.id}`)
+      .then((response) => {
+        this.user = response.data;
+      })
+      .catch((e) => {
+        this.errors.push(e);
+      });
+  },
+  methods: {
+    makeToastError(variant = null) {
+        this.$bvToast.toast('Update Error !', {
+          title: `Notification`,
+          variant: variant,
+          solid: true
+        })
+      },
+    makeToast(variant = null) {
+        this.$bvToast.toast('Update Successfully !', {
+          title: `Notification`,
+          variant: variant,
+          solid: true
+        })
+      },
+    handleUpdate() {
+      const params = {
+        full_name: this.user.full_name,
+        gender: this.user.gender,
+        status: this.user.status,
+      };
+      axios
+        .put(
+          `http://localhost:3000/api/users/${this.$route.params.id}`,
+          params
+        )
+
+        .then((response) => {
+          this.users = response.data;
+          this.makeToast('success')
+        })
+        .catch((e) => {
+          console.log(e)
+          this.makeToastError('danger')
+        });
+    },
+  },
 };
 </script>
 
 <style>
- .inf-content{
-    border:1px solid #DDDDDD;
-    -webkit-border-radius:10px;
-    -moz-border-radius:10px;
-    border-radius:10px;
-    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.3);
+.inf-content {
+  border: 1px solid #dddddd;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.3);
 }
 </style>
