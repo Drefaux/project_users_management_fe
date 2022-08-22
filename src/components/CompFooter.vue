@@ -1,6 +1,6 @@
 <template>
     
-  <footer text="center" style="background-color: #f1f1f1">
+  <footer class="footer" text="center" style="background-color: #f1f1f1">
       
       <div
         class="text-center text-dark p-3"
@@ -23,5 +23,9 @@ export default {
 </script>
 
 <style>
-
+.footer{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
 </style>
